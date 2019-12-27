@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 import * as commander from 'commander';
 
 import FileSystemAdapter from '../src/port/adapter/filesystem/FileSystemAdapter';
@@ -17,7 +19,7 @@ program
   .command('create <description>')
   .description('create a new migration')
   .action(
-    withConfig(async description => {
+    withConfig(async (description: string) => {
       await adapter.create(description);
       console.log(`Migration created`);
     })
@@ -35,8 +37,8 @@ program
 
 program.parse(process.argv);
 
-function withConfig(action) {
-  return (...params) => {
+function withConfig(action: any) {
+  return (...params: any) => {
     adapter.loadConfig();
     action(...params);
   };
