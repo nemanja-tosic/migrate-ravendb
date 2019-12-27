@@ -1,14 +1,16 @@
 # ravendb-nodejs-migrations
 
-A database migration tool for RavenDB in Node. 
+A database migration tool for RavenDB in Node.
+
+[![Build Status](https://travis-ci.org/nemanja-tosic/ravendb-nodejs-migrations.svg?branch=master)](https://travis-ci.org/nemanja-tosic/ravendb-nodejs-migrations)
 
 WORK IN PROGRESS.
 
 ## Installation
 
-````bash
+```bash
 $ yarn add ravendb-nodejs-migrations
-````
+```
 
 ## CLI Usage
 
