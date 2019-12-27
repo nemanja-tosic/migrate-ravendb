@@ -1,7 +1,8 @@
 {
   "name": "ravendb-nodejs-migrations",
   "version": "0.1.2",
-  "main": "dist/src/application/MigrateApplicationService.js",
+  "main": "dist/src/port/adapter/library/LibraryAdapter.js",
+  "types": "dist/src/port/adapter/library/LibraryAdapter.d.ts",
   "license": "MIT",
   "bin": {
     "migrate-ravendb": "dist/bin/migrate-ravendb.js"
