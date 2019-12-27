@@ -1,0 +1,13 @@
+---
+- name: Update packages
+  yum:
+    update_cache: yes
+
+- name: Install base packages
+  package:
+    name:
+      - gnupg
+      - rsync
+      - unzip
+      - zip
+    state: present

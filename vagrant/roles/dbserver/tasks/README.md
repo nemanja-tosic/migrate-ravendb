@@ -1,0 +1,1 @@
+See https://ravendb.net/docs/article-page/4.2/csharp/start/installation/upgrading-to-new-version

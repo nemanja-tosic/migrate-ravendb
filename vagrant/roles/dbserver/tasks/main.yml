@@ -1,0 +1,77 @@
+---
+- name: Populate service facts
+  service_facts:
+
+- name: Install bzip2
+  package:
+    name: bzip2
+    state: present
+
+- name: Install libicu
+  package:
+    name: libicu
+    state: present
+
+- name: Download raven
+  get_url:
+    url: "{{ ravendb_archive }}"
+    dest: "/tmp/ravendb.tar.bz2"
+
+- name: Stop service
+  systemd:
+    state: stopped
+    name: ravendb
+  when: "'ravendb.service' in services"
+
+- name: Remove previous
+  file:
+    state: absent
+    path: "{{ ravendb_home }}/"
+
+- name: Create home dir
+  file:
+    path: "{{ ravendb_home }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+    state: directory
+
+- name: Extract raven
+  unarchive:
+    src: /tmp/ravendb.tar.bz2
+    dest: "{{ ravendb_home }}"
+    remote_src: yes
+    extra_opts: [--strip-components=1]
+
+- name: Create backup dir
+  file:
+    path: "{{ ravendb_backup_dir }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+    state: directory
+
+- name: Create data dir
+  file:
+    path: "{{ ravendb_data_dir }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+    state: directory
+
+- name: Configure
+  template:
+    src: settings.json.j2
+    dest: "{{ ravendb_home }}/Server/settings.json"
+
+- name: Set up systemd
+  template:
+    src: ravendb.service.j2
+    dest: "/etc/systemd/system/ravendb.service"
+
+- name: Start service
+  systemd:
+    state: started
+    enabled: yes
+    daemon_reload: yes
+    name: ravendb

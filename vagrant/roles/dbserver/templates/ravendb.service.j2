@@ -1,0 +1,16 @@
+[Unit]
+Description=RavenDB
+After=network.target
+
+[Service]
+LimitCORE=infinity
+LimitNOFILE=65536
+LimitRSS=infinity
+LimitAS=infinity
+User=root
+Restart=on-failure
+Type=simple
+ExecStart={{ ravendb_home }}/run.sh
+
+[Install]
+WantedBy=multi-user.target

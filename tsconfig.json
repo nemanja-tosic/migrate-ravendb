@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "lib": ["esnext", "es2015.iterable", "es2015.collection"],
+    "target": "es5",
+    "downlevelIteration": true
+  }
+}
