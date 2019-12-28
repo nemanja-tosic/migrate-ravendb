@@ -1,9 +1,22 @@
 import FileSystemAdapter from '../filesystem/FileSystemAdapter';
 
-export default class LibraryAdapter extends FileSystemAdapter {
-  constructor() {
-    super();
+export default class LibraryAdapter {
+  private fileSystemAdapter = new FileSystemAdapter();
 
-    this.loadConfig();
+  private constructor() {
+  }
+
+  public static createFromFileSystemConfig(path: string): LibraryAdapter {
+    const adapter = new LibraryAdapter();
+    adapter.loadConfig(path);
+    return adapter;
+  }
+
+  public async up() {
+    await this.fileSystemAdapter.up();
+  }
+
+  private loadConfig(path: string) {
+    this.fileSystemAdapter.loadConfig(path);
   }
 }

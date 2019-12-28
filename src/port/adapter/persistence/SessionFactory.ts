@@ -9,18 +9,23 @@ export default class SessionFactory implements ISessionFactory {
   async createSession<T>(
     cb: (session: IDocumentSession) => Promise<T>
   ): Promise<T> {
-    const config = ConfigProvider.Instance.config;
-    const store = new DocumentStore(config.databaseUrl, config.databaseName);
+    const {
+      database: { url, name, authOptions }
+    } = ConfigProvider.Instance.config;
+
+    const store = new DocumentStore(url, name, authOptions as any);
 
     store.initialize();
 
     const session = store.openSession();
-    const result = await cb(session);
-    await session.saveChanges();
+    try {
+      const result = await cb(session);
+      await session.saveChanges();
 
-    session.dispose();
-    store.dispose();
-
-    return result;
+      return result;
+    } finally {
+      session.dispose();
+      store.dispose();
+    }
   }
 }

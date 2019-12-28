@@ -1,43 +1,63 @@
 import * as glob from 'glob';
-import { join, resolve } from 'path';
-import { readFileSync, mkdirSync, writeFileSync } from 'fs';
-import { stripIndent } from 'common-tags';
+import { resolve, join, dirname } from 'path';
+import { mkdirSync, writeFileSync, existsSync } from 'fs';
 import * as moment from 'moment';
 
+import ConfigProvider from '../config/ConfigProvider';
 import MigrateApplicationService from '../../../application/MigrateApplicationService';
 import IMigration from '../../../domain/IMigration';
-import ConfigProvider from '../config/ConfigProvider';
 import IFileSystemConfig from './IFileSystemConfig';
-import FileSystemConfigProvider from './FileSystemConfigProvider';
 
 export default class FileSystemAdapter {
-  public loadConfig() {
-    const config = JSON.parse(
-      readFileSync(join(process.cwd(), 'migrations.json'), 'utf-8')
-    );
+  // TODO: verify config
+  public loadConfig(path: string) {
+    if (!existsSync(path)) {
+      return this.error(
+        `${path} doesn't exist. Did you initialize migrations first?`
+      );
+    }
 
-    ConfigProvider.Instance = new FileSystemConfigProvider(config);
+    const config: IFileSystemConfig = require(path);
+
+    (ConfigProvider.Instance.config as IFileSystemConfig) = {
+      ...config,
+      migrationsDirectory: resolve(dirname(path), config.migrationsDirectory)
+    };
   }
 
-  public async up() {
-    return MigrateApplicationService.up(this.getMigrationScripts());
-  }
+  public async createConfig(path: string) {
+    const config: IFileSystemConfig = {
+      ...ConfigProvider.createDefaultConfig(),
+      migrationsDirectory: join(dirname(path), 'migrations')
+    };
 
-  private getMigrationScripts(): IMigration[] {
-    return glob
-      .sync('*.js', { cwd: this.config.migrationsDirectory })
-      .map(fileName => {
-        const { up, down } = require(resolve(
-          process.cwd(),
-          this.config.migrationsDirectory,
-          fileName
-        ));
+    writeFileSync(path, `module.exports = ${JSON.stringify(config, null, 2)}`);
+    mkdirSync(config.migrationsDirectory);
 
-        return { id: fileName, up, down, description: '' };
-      });
+    this.log('Migrations project initialized');
   }
 
   public async create(description: string) {
+    this.saveAsFile(await MigrateApplicationService.create(description));
+  }
+
+  public async up() {
+    await MigrateApplicationService.up(this.getMigrationScripts());
+    this.log('Migrated up');
+  }
+
+  private saveAsFile(migration: IMigration) {
+    const fileName = `${this.createFileName(migration.description)}.js`;
+
+    writeFileSync(
+      join(this.config.migrationsDirectory, fileName),
+      `module.exports = { up: ${migration.up}, down: ${migration.down} };`
+    );
+
+    this.log(`Created migration "${fileName}"`);
+  }
+
+  private createFileName(description: string) {
     // lexicographically sortable
     const timestamp = moment().format('YYYYMMDDHHmmss');
     const suffix = description
@@ -45,37 +65,25 @@ export default class FileSystemAdapter {
       .split(' ')
       .join('-');
 
-    const migration = {
-      ...(await MigrateApplicationService.create(description)),
-      id: `${timestamp}-${suffix}`
-    };
-
-    writeFileSync(
-      join(this.config.migrationsDirectory, `${migration.id}.js`),
-      stripIndent`
-        module.exports = {
-          up: ${migration.up},
-          down: ${migration.down}
-        };
-      `
-    );
+    return `${timestamp}-${suffix}`;
   }
 
-  public async init() {
-    const config: IFileSystemConfig = {
-      ...ConfigProvider.createDefaultConfig(),
-      migrationsDirectory: './migrations'
-    };
+  private getMigrationScripts(): IMigration[] {
+    const { migrationsDirectory } = this.config;
 
-    writeFileSync(
-      join(process.cwd(), 'migrations.json'),
-      JSON.stringify(config, null, 2)
-    );
+    return glob.sync('*.js', { cwd: migrationsDirectory }).map(fileName => {
+      const { up, down } = require(join(migrationsDirectory, fileName));
 
-    mkdirSync(join(process.cwd(), config.migrationsDirectory));
+      return { id: fileName, up, down, description: '' };
+    });
   }
 
   private get config(): IFileSystemConfig {
     return ConfigProvider.Instance.config as IFileSystemConfig;
   }
+
+  // TODO: introduce logger
+  protected log: (message: string) => void = console.log;
+
+  protected error: (message: string) => void = console.error;
 }

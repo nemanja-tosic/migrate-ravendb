@@ -1,45 +1,34 @@
 #! /usr/bin/env node
 
 import * as commander from 'commander';
+import { join } from 'path';
 
 import FileSystemAdapter from '../src/port/adapter/filesystem/FileSystemAdapter';
 
 const program = new commander.Command();
 const adapter = new FileSystemAdapter();
+const defaultConfigName = '.ravendb-migrations.js';
 
 program
   .command('init')
   .description('bootstrap migrations')
-  .action(async () => {
-    await adapter.init();
-    console.log('Migrations project initalized');
-  });
+  .action(() => adapter.createConfig(join(process.cwd(), defaultConfigName)));
 
 program
   .command('create <description>')
   .description('create a new migration')
-  .action(
-    withConfig(async (description: string) => {
-      await adapter.create(description);
-      console.log(`Migration created`);
-    })
-  );
+  .action(withConfig((description: string) => adapter.create(description)));
 
 program
   .command('up')
   .description('run pending migrations')
-  .action(
-    withConfig(async () => {
-      await adapter.up();
-      console.log(`Migrated up`);
-    })
-  );
+  .action(withConfig(() => adapter.up()));
 
 program.parse(process.argv);
 
 function withConfig(action: any) {
   return (...params: any) => {
-    adapter.loadConfig();
+    adapter.loadConfig(join(process.cwd(), defaultConfigName));
     action(...params);
   };
 }
