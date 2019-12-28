@@ -7,7 +7,7 @@ import FileSystemAdapter from '../src/port/adapter/filesystem/FileSystemAdapter'
 
 const program = new commander.Command();
 const adapter = new FileSystemAdapter();
-const defaultConfigName = '.ravendb-migrations.js';
+const defaultConfigName = 'ravendb-migrations.js';
 
 program
   .command('init')

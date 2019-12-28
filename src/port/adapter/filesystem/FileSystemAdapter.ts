@@ -28,11 +28,11 @@ export default class FileSystemAdapter {
   public async createConfig(path: string) {
     const config: IFileSystemConfig = {
       ...ConfigProvider.createDefaultConfig(),
-      migrationsDirectory: join(dirname(path), 'migrations')
+      migrationsDirectory: './migrations'
     };
 
     writeFileSync(path, `module.exports = ${JSON.stringify(config, null, 2)}`);
-    mkdirSync(config.migrationsDirectory);
+    mkdirSync(join(dirname(path), config.migrationsDirectory));
 
     this.log('Migrations project initialized');
   }
