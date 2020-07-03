@@ -8,6 +8,7 @@
     "ravendb-migrations": "dist/bin/ravendb-migrations.js"
   },
   "scripts": {
+    "watch": "tsc --watch --skipLibCheck",
     "build": "rm -rf dist && tsc --skipLibCheck",
     "prepack": "npm run build"
   },

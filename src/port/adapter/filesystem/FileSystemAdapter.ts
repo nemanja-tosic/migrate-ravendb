@@ -1,7 +1,8 @@
 import * as glob from 'glob';
-import { resolve, join, dirname } from 'path';
+import { resolve, join, dirname, basename } from 'path';
 import { mkdirSync, writeFileSync, existsSync } from 'fs';
 import * as moment from 'moment';
+import { register } from 'ts-node';
 
 import ConfigProvider from '../config/ConfigProvider';
 import MigrateApplicationService from '../../../application/MigrateApplicationService';
@@ -42,8 +43,14 @@ export default class FileSystemAdapter {
   }
 
   public async up() {
+    const tsNodeRegister = register({
+      transpileOnly: true
+    });
+
     await MigrateApplicationService.up(this.getMigrationScripts());
     this.log('Migrated up');
+
+    tsNodeRegister.enabled(false);
   }
 
   private saveAsFile(migration: IMigration) {
@@ -71,11 +78,14 @@ export default class FileSystemAdapter {
   private getMigrationScripts(): IMigration[] {
     const { migrationsDirectory } = this.config;
 
-    return glob.sync('*.js', { cwd: migrationsDirectory }).map(fileName => {
-      const { up, down } = require(join(migrationsDirectory, fileName));
+    return glob
+      .sync('**/*.{js,ts}', { cwd: migrationsDirectory })
+      .map(path => basename(path))
+      .map(fileName => {
+        const { up, down } = require(join(migrationsDirectory, fileName));
 
-      return { id: fileName, up, down, description: '' };
-    });
+        return { id: fileName, up, down, description: '' };
+      });
   }
 
   private get config(): IFileSystemConfig {
