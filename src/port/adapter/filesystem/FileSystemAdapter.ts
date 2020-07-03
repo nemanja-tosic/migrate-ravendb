@@ -71,7 +71,7 @@ export default class FileSystemAdapter {
   private getMigrationScripts(): IMigration[] {
     const { migrationsDirectory } = this.config;
 
-    return glob.sync('*.js', { cwd: migrationsDirectory }).map(fileName => {
+    return glob.sync('*.{js,ts}', { cwd: migrationsDirectory }).map(fileName => {
       const { up, down } = require(join(migrationsDirectory, fileName));
 
       return { id: fileName, up, down, description: '' };

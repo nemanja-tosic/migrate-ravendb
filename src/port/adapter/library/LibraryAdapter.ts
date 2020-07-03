@@ -1,10 +1,11 @@
 import FileSystemAdapter from '../filesystem/FileSystemAdapter';
 
+import 'ts-node/register';
+
 export default class LibraryAdapter {
   private fileSystemAdapter = new FileSystemAdapter();
 
-  private constructor() {
-  }
+  private constructor() {}
 
   public static createFromFileSystemConfig(path: string): LibraryAdapter {
     const adapter = new LibraryAdapter();
