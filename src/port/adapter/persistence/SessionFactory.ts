@@ -1,4 +1,4 @@
-import { DocumentStore, IDocumentSession } from 'ravendb';
+import { DocumentConventions, DocumentStore, IDocumentSession } from 'ravendb';
 
 import ISessionFactory from '../../../domain/ISessionFactory';
 import ConfigProvider from '../config/ConfigProvider';
@@ -10,10 +10,13 @@ export default class SessionFactory implements ISessionFactory {
     cb: (session: IDocumentSession) => Promise<T>
   ): Promise<T> {
     const {
-      database: { url, name, authOptions }
+      database: { url, name, authOptions },
+      conventions
     } = ConfigProvider.Instance.config;
 
     const store = new DocumentStore(url, name, authOptions as any);
+
+    store.conventions = Object.assign(new DocumentConventions(), conventions || {});
 
     store.initialize();
 
