@@ -79,7 +79,10 @@ export default class FileSystemAdapter {
     const { migrationsDirectory } = this.config;
 
     return glob
-      .sync('**/*.{js,ts}', { cwd: migrationsDirectory })
+      .sync('**/*.{js,ts}', {
+        cwd: migrationsDirectory,
+        ignore: ['*.d.ts', '*.map']
+      })
       .map(path => basename(path))
       .map(fileName => {
         const { up, down } = require(join(migrationsDirectory, fileName));
