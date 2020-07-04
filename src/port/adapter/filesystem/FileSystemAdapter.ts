@@ -1,5 +1,5 @@
 import * as glob from 'glob';
-import { resolve, join, dirname, basename } from 'path';
+import { resolve, join, dirname, parse } from 'path';
 import { mkdirSync, writeFileSync, existsSync } from 'fs';
 import * as moment from 'moment';
 import { register } from 'ts-node';
@@ -83,7 +83,7 @@ export default class FileSystemAdapter {
         cwd: migrationsDirectory,
         ignore: ['*.d.ts', '*.map']
       })
-      .map(path => basename(path))
+      .map(path => parse(path).name)
       .map(fileName => {
         const { up, down } = require(join(migrationsDirectory, fileName));
 
