@@ -84,6 +84,7 @@ export default class FileSystemAdapter {
         ignore: ['*.d.ts', '*.map']
       })
       .map(path => parse(path).name)
+      .sort()
       .map(fileName => {
         const { up, down } = require(join(migrationsDirectory, fileName));
 
