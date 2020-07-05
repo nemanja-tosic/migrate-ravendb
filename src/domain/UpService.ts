@@ -16,6 +16,7 @@ export default class UpService {
         await migration.up(session);
         changelog.addMigration(migration);
         await changelogRepo.store(changelog);
+        await session.saveChanges();
       }
     });
   }
