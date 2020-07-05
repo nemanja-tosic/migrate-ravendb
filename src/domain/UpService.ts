@@ -15,9 +15,8 @@ export default class UpService {
       for (const migration of changelog.getPendingMigrations(migrations)) {
         await migration.up(session);
         changelog.addMigration(migration);
+        await changelogRepo.store(changelog);
       }
-
-      await changelogRepo.store(changelog);
     });
   }
 
