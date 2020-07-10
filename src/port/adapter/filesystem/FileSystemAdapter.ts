@@ -44,7 +44,10 @@ export default class FileSystemAdapter {
 
   public async up() {
     const tsNodeRegister = register({
-      transpileOnly: true
+      transpileOnly: true,
+      compilerOptions: {
+        target: 'es6'
+      }
     });
 
     await MigrateApplicationService.up(this.getMigrationScripts());
