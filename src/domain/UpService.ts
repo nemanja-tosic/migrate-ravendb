@@ -3,30 +3,22 @@ import { IDocumentSession } from 'ravendb';
 import IChangelogRepo from './IChangelogRepo';
 import IMigration from './IMigration';
 
-import ChangelogRepo from '../port/adapter/persistence/ChangelogRepo';
-import SessionFactory from '../port/adapter/persistence/SessionFactory';
-
 export default class UpService {
-  public async migrate(migrations: IMigration[]): Promise<void> {
-    await SessionFactory.Instance.createSession<void>(async session => {
-      const changelogRepo = UpService.createChangelogRepo(session);
+  constructor(private changeLogRepo: IChangelogRepo) {}
 
-      const changelog = await changelogRepo.get();
-      for (const migration of changelog.getPendingMigrations(migrations)) {
-        await migration.up(session);
-        changelog.addMigration(migration);
-        await changelogRepo.store(changelog);
+  public async migrate(
+    session: IDocumentSession,
+    migrations: IMigration[]
+  ): Promise<void> {
+    const changelog = await this.changeLogRepo.get();
 
-        await session.saveChanges();
-        await session.advanced.waitForIndexesAfterSaveChanges();
-        await session.advanced.waitForReplicationAfterSaveChanges();
-      }
-    });
-  }
+    for (const migration of changelog.getPendingMigrations(migrations)) {
+      await migration.up(session);
+      changelog.addMigration(migration);
+      await this.changeLogRepo.store(changelog);
 
-  private static createChangelogRepo(
-    session: IDocumentSession
-  ): IChangelogRepo {
-    return new ChangelogRepo(session);
+      await session.saveChanges();
+      await session.advanced.waitForIndexesAfterSaveChanges();
+    }
   }
 }

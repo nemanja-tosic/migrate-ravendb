@@ -26,7 +26,7 @@ Given(/^a pending migration "(.*?)":$/, function(
   })();
 });
 
-When(/^I migrate up$/, function() {
+When(/^I migrate up$/, { timeout: 20 * 1000 }, function() {
   return TestAdapter.up(this.migrations);
 });
 
