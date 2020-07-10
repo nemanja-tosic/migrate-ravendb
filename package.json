@@ -1,6 +1,6 @@
 {
   "name": "ravendb-migrations",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "main": "dist/src/port/adapter/library/LibraryAdapter.js",
   "types": "dist/src/port/adapter/library/LibraryAdapter.d.ts",
   "license": "MIT",
