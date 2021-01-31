@@ -1,11 +1,11 @@
-import { Given, When, Then, TableDefinition, After } from 'cucumber';
+import { Given, When, Then, DataTable, After } from '@cucumber/cucumber';
 import { should } from 'chai';
 
 import TestAdapter from '../../src/port/adapter/test/TestAdapter';
 
 should();
 
-Given(/^the following entities:$/, function(entities: TableDefinition) {
+Given(/^the following entities:$/, function(entities: DataTable) {
   return (async () => {
     for (const row of entities.raw()) {
       const entity = JSON.parse(row[0]);

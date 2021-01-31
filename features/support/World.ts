@@ -1,4 +1,4 @@
-import { setWorldConstructor } from 'cucumber';
+import { setWorldConstructor } from '@cucumber/cucumber';
 import IMigration from '../../src/domain/IMigration';
 
 class World {
