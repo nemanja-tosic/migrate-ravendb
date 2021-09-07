@@ -22,14 +22,14 @@ export default class FileSystemAdapter {
 
     (ConfigProvider.Instance.config as IFileSystemConfig) = {
       ...config,
-      migrationsDirectory: resolve(dirname(path), config.migrationsDirectory)
+      migrationsDirectory: resolve(dirname(path), config.migrationsDirectory),
     };
   }
 
   public async createConfig(path: string) {
     const config: IFileSystemConfig = {
       ...ConfigProvider.createDefaultConfig(),
-      migrationsDirectory: './migrations'
+      migrationsDirectory: './migrations',
     };
 
     writeFileSync(path, `module.exports = ${JSON.stringify(config, null, 2)}`);
@@ -46,8 +46,8 @@ export default class FileSystemAdapter {
     const tsNodeRegister = register({
       transpileOnly: true,
       compilerOptions: {
-        target: 'es6'
-      }
+        target: 'es6',
+      },
     });
 
     await MigrateApplicationService.up(this.getMigrationScripts());
@@ -70,10 +70,7 @@ export default class FileSystemAdapter {
   private createFileName(description: string) {
     // lexicographically sortable
     const timestamp = moment().format('YYYYMMDDHHmmss');
-    const suffix = description
-      .toLocaleLowerCase()
-      .split(' ')
-      .join('-');
+    const suffix = description.toLocaleLowerCase().split(' ').join('-');
 
     return `${timestamp}-${suffix}`;
   }
@@ -84,11 +81,11 @@ export default class FileSystemAdapter {
     return glob
       .sync('**/*.{js,ts}', {
         cwd: migrationsDirectory,
-        ignore: ['*.d.ts', '*.map']
+        ignore: ['*.d.ts', '*.map'],
       })
-      .map(path => parse(path).name)
+      .map((path) => parse(path).name)
       .sort()
-      .map(fileName => {
+      .map((fileName) => {
         const { up, down } = require(join(migrationsDirectory, fileName));
 
         return { id: fileName, up, down, description: '' };

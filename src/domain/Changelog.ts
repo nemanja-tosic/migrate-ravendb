@@ -9,10 +9,10 @@ export default class Changelog {
   }
 
   public getPendingMigrations(migrations: IMigration[]): IMigration[] {
-    return migrations.filter(m => !this.containsEntry(m.id));
+    return migrations.filter((m) => !this.containsEntry(m.id));
   }
 
   private containsEntry(id: string) {
-    return this.entries.some(e => e.id === id);
+    return this.entries.some((e) => e.id === id);
   }
 }
