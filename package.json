@@ -8,7 +8,7 @@
   "scripts": {
     "watch": "tsc --watch --skipLibCheck",
     "build": "rm -rf dist && tsc --skipLibCheck",
-    "prepack": "npm run build"
+    "prepack": "yarn build"
   },
   "files": [
     "/dist"
