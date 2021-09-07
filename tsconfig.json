@@ -6,7 +6,8 @@
     "declaration": true,
     "declarationMap": true,
     "strict": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "incremental": true
   },
-  "include": ["bin", "src"]
+  "include": ["bin", "src", "features"]
 }

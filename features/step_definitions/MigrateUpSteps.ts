@@ -1,49 +1,45 @@
 import { Given, When, Then, DataTable, After } from '@cucumber/cucumber';
-import { should } from 'chai';
+import { expect } from 'chai';
+import { World } from '../support/World';
 
 import TestAdapter from '../../src/port/adapter/test/TestAdapter';
 
-should();
+Given<World>('the following entities:', async function (entities: DataTable) {
+  for (const row of entities.raw()) {
+    const entity = JSON.parse(row[0]);
 
-Given(/^the following entities:$/, function(entities: DataTable) {
-  return (async () => {
-    for (const row of entities.raw()) {
-      const entity = JSON.parse(row[0]);
+    await TestAdapter.createEntity(entity);
 
-      await TestAdapter.createEntity(entity);
-
-      this.cleanup.push(entity.id);
-    }
-  })();
+    this.cleanup.push(entity.id);
+  }
 });
 
-Given(/^a pending migration "(.*?)":$/, function(
-  description: string,
-  script: string
-) {
-  return (async () => {
+Given<World>(
+  'a pending migration {string}:',
+  async function (description: string, script: string) {
     this.migrations.push(await TestAdapter.create(script, description));
-  })();
-});
+  }
+);
 
-When(/^I migrate up$/, { timeout: 20 * 1000 }, function() {
+When<World>('I migrate up', { timeout: 20 * 1000 }, async function () {
   return TestAdapter.up(this.migrations);
 });
 
-Then(/^the database should contain:$/, function(expectedEntities) {
-  return (async () => {
-    for (const expectedEntity of expectedEntities
-      .raw()
-      .map((e: any) => JSON.parse(e))) {
+Then<World>(
+  'the database should contain:',
+  async function (expectedEntities: DataTable) {
+    for (const row of expectedEntities.raw()) {
+      const expectedEntity = JSON.parse(row[0]);
       const actualEntity = await TestAdapter.loadEntity(expectedEntity.id);
 
-      for (const [key, val] of Object.entries(expectedEntity)) {
-        actualEntity.should.have.property(key, val);
-      }
+      expect(actualEntity).to.include(expectedEntity);
+      // for (const [key, val] of Object.entries(expectedEntity)) {
+      //   expect(actualEntity).to.have.property(key, val);
+      // }
     }
-  })();
-});
+  }
+);
 
-After(function() {
+After<World>(async function () {
   return TestAdapter.deleteEntities(this.cleanup);
 });

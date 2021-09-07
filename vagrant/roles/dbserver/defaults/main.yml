@@ -1,5 +1,5 @@
 ---
-ravendb_archive: "https://hibernatingrhinos.com/downloads/RavenDB%20for%20Linux%20x64/42021"
+ravendb_archive: "https://hibernatingrhinos.com/downloads/RavenDB%20for%20Linux%20x64/52003"
 ravendb_home: "/usr/local/RavenDB"
 ravendb_backup_dir: "/var/backups/RavenDB"
 ravendb_data_dir: "/var/local/RavenDB/RavenData"

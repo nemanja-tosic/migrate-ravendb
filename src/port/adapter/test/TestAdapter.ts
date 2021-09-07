@@ -5,8 +5,8 @@ import SessionFactory from '../persistence/SessionFactory';
 
 ConfigProvider.Instance.config = {
   database: {
-    url: 'http://192.168.42.42',
-    name: 'test'
+    url: process.env.DB_HOST ?? 'http://192.168.42.42',
+    name: process.env.DB_NAME ?? 'test'
   }
 };
 
