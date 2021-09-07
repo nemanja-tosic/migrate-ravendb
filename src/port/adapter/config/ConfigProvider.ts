@@ -11,8 +11,9 @@ export default class ConfigProvider {
     return {
       database: {
         url: 'http://localhost',
-        name: 'dev'
-      }
+        name: 'dev',
+      },
+      conventions: {},
     };
   }
 }

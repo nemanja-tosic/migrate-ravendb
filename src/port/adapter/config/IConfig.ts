@@ -6,7 +6,5 @@ export default interface IConfig {
     name: string;
     authOptions?: IAuthOptions;
   };
-  conventions?: {
-    [key: string]: any;
-  };
+  conventions: Record<string, any>;
 }

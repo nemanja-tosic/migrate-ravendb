@@ -4,7 +4,7 @@ import {
   DocumentStore,
   GetStatisticsOperation,
   IDocumentSession,
-  IDocumentStore
+  IDocumentStore,
 } from 'ravendb';
 
 import ISessionFactory from '../../../domain/ISessionFactory';
@@ -18,14 +18,11 @@ export default class SessionFactory implements ISessionFactory {
   ): Promise<T> {
     const {
       database: { url, name, authOptions },
-      conventions
+      conventions,
     } = ConfigProvider.Instance.config;
 
     const store = new DocumentStore(url, name, authOptions as any);
-    store.conventions = Object.assign(
-      new DocumentConventions(),
-      conventions || {}
-    );
+    store.conventions = Object.assign(new DocumentConventions(), conventions);
     store.initialize();
 
     await this.ensureDatabaseExists(store, name);
@@ -53,7 +50,7 @@ export default class SessionFactory implements ISessionFactory {
     return await store.maintenance
       .forDatabase(database)
       .send(new GetStatisticsOperation())
-      .catch(error => {
+      .catch((error) => {
         if (
           error.name !== 'DatabaseDoesNotExistException' ||
           !createDatabaseIfNotExists
@@ -63,11 +60,11 @@ export default class SessionFactory implements ISessionFactory {
 
         return store.maintenance.server.send(
           new CreateDatabaseOperation({
-            databaseName: database
+            databaseName: database,
           })
         );
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.name === 'ConcurrencyException') {
           // already created, all good
           return;
