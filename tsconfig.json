@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "lib": ["esnext", "es2015.iterable", "es2015.collection"],
-    "target": "es5",
-    "downlevelIteration": true,
+    "lib": ["ES2019"],
+    "target": "ES2019",
+    "module": "CommonJS",
     "declaration": true,
-    "outDir": "dist",
-    "strict": true
+    "declarationMap": true,
+    "strict": true,
+    "outDir": "dist"
   },
   "include": ["bin", "src"]
 }
