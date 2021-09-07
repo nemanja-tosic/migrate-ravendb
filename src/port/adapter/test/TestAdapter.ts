@@ -11,6 +11,7 @@ ConfigProvider.Instance.config = {
     url: process.env.DB_HOST ?? vagrantDbHost,
     name: process.env.DB_NAME ?? vagrantDbName,
   },
+  conventions: {},
 };
 
 export default class TestAdapter {
