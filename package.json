@@ -11,7 +11,8 @@
     "prepack": "yarn build"
   },
   "files": [
-    "/dist"
+    "dist/bin",
+    "dist/src"
   ],
   "homepage": "https://github.com/nemanja-tosic/ravendb-nodejs-migrations",
   "devDependencies": {
