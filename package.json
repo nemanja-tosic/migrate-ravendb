@@ -1,6 +1,6 @@
 {
   "name": "ravendb-migrations",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "main": "./dist/src/port/adapter/library/LibraryAdapter.js",
   "exports": {
     ".": "./dist/src/port/adapter/library/LibraryAdapter.js"
