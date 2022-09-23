@@ -1,7 +1,10 @@
 {
   "name": "ravendb-migrations",
   "version": "0.4.2",
-  "main": "dist/src/port/adapter/library/LibraryAdapter.js",
+  "main": "./dist/src/port/adapter/library/LibraryAdapter.js",
+  "exports": {
+    ".": "./dist/src/port/adapter/library/LibraryAdapter.js"
+  },
   "license": "MIT",
   "bin": "dist/bin/ravendb-migrations.js",
   "scripts": {
@@ -52,7 +55,7 @@
     }
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   },
   "packageManager": "yarn@3.2.3"
 }

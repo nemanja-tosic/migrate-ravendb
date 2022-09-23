@@ -1,21 +1,21 @@
 import FileSystemAdapter from '../filesystem/FileSystemAdapter';
 
-export default class LibraryAdapter {
+export class LibraryAdapter {
   private fileSystemAdapter = new FileSystemAdapter();
-
-  private constructor() {}
-
-  public static createFromFileSystemConfig(path: string): LibraryAdapter {
-    const adapter = new LibraryAdapter();
-    adapter.loadConfig(path);
-    return adapter;
-  }
 
   public async up() {
     await this.fileSystemAdapter.up();
   }
 
-  private loadConfig(path: string) {
-    this.fileSystemAdapter.loadConfig(path);
+  public async loadConfig(path: string) {
+    await this.fileSystemAdapter.loadConfig(path);
   }
+}
+
+export async function createFromFileSystemConfig(
+  path: string
+): Promise<LibraryAdapter> {
+  const adapter = new LibraryAdapter();
+  await adapter.loadConfig(path);
+  return adapter;
 }

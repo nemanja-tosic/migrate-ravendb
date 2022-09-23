@@ -1,7 +1,7 @@
 import * as glob from 'glob';
 import { resolve, join, dirname, parse } from 'path';
 import { mkdirSync, writeFileSync, existsSync } from 'fs';
-import * as moment from 'moment';
+import moment from 'moment';
 import { register } from 'ts-node';
 
 import ConfigProvider from '../config/ConfigProvider';
@@ -11,14 +11,14 @@ import IFileSystemConfig from './IFileSystemConfig';
 
 export default class FileSystemAdapter {
   // TODO: verify config
-  public loadConfig(path: string) {
+  public async loadConfig(path: string) {
     if (!existsSync(path)) {
       return this.error(
         `${path} doesn't exist. Did you initialize migrations first?`
       );
     }
 
-    const config: IFileSystemConfig = require(path);
+    const config: IFileSystemConfig = (await import(path)).default;
 
     (ConfigProvider.Instance.config as IFileSystemConfig) = {
       ...config,
@@ -50,7 +50,7 @@ export default class FileSystemAdapter {
       },
     });
 
-    await MigrateApplicationService.up(this.getMigrationScripts());
+    await MigrateApplicationService.up(await this.getMigrationScripts());
     this.log('Migrated up');
 
     tsNodeRegister.enabled(false);
@@ -75,21 +75,25 @@ export default class FileSystemAdapter {
     return `${timestamp}-${suffix}`;
   }
 
-  private getMigrationScripts(): IMigration[] {
+  private async getMigrationScripts(): Promise<IMigration[]> {
     const { migrationsDirectory } = this.config;
 
-    return glob
-      .sync('**/*.{js,ts}', {
-        cwd: migrationsDirectory,
-        ignore: ['*.d.ts', '*.map'],
-      })
-      .map((path) => parse(path).name)
-      .sort()
-      .map((fileName) => {
-        const { up, down } = require(join(migrationsDirectory, fileName));
+    return Promise.all(
+      glob
+        .sync('**/*.{js,ts}', {
+          cwd: migrationsDirectory,
+          ignore: ['*.d.ts', '*.map'],
+        })
+        .map((path) => parse(path))
+        .sort((a, b) => a.base.localeCompare(b.base))
+        .map(async (path) => {
+          const { up, down } = await import(
+            join(migrationsDirectory, path.base)
+          );
 
-        return { id: fileName, up, down, description: '' };
-      });
+          return { id: path.name, up, down, description: '' };
+        })
+    );
   }
 
   private get config(): IFileSystemConfig {

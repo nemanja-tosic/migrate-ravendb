@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
-    "lib": ["ES2019"],
-    "target": "ES2019",
-    "module": "CommonJS",
+    "lib": ["ES2021"],
+    "target": "ES2021",
+    "module": "Node16",
     "declaration": true,
     "declarationMap": true,
     "strict": true,
     "outDir": "dist",
-    "incremental": true
+    "incremental": true,
+    "esModuleInterop": true
   },
   "include": ["bin", "src", "features"]
 }

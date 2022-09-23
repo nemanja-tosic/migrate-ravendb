@@ -27,8 +27,8 @@ program
 program.parse(process.argv);
 
 function withConfig(action: any) {
-  return (...params: any) => {
-    adapter.loadConfig(join(process.cwd(), defaultConfigName));
+  return async (...params: any) => {
+    await adapter.loadConfig(join(process.cwd(), defaultConfigName));
     action(...params);
   };
 }
