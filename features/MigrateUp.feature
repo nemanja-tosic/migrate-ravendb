@@ -1,6 +1,6 @@
 Feature: Migrate Up
   As a developer
-  I want to provide execute a migration script that changes the database schema
+  I want to provide a migration script that changes the database schema
   So that I can version control the database
 
   Scenario: Add a new field
